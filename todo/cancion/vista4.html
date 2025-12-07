@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+	<title>Música y Notas de Amor</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #ffeff5 0%, #ffeaf2 50%, #fff5f9 100%);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			padding: 20px;
+			position: relative;
+			overflow-x: hidden;
+		}
+
+		/* Corazones interactivos */
+		#hearts-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			z-index: 1;
+			overflow: hidden;
+		}
+
+		.heart {
+			position: absolute;
+			font-size: 24px;
+			cursor: pointer;
+			transition: transform 0.3s ease;
+			z-index: 2;
+			pointer-events: auto;
+			animation: floatHeart 6s ease-in-out infinite;
+		}
+
+		.heart:hover {
+			transform: scale(1.3);
+		}
+
+		@keyframes floatHeart {
+			0%, 100% {
+				transform: translateY(0) rotate(0deg);
+			}
+			25% {
+				transform: translateY(-20px) rotate(5deg);
+			}
+			75% {
+				transform: translateY(-20px) rotate(-5deg);
+			}
+		}
+
+		/* Nota de amor (modal) */
+		.note-modal {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.7);
+			display: none;
+			justify-content: center;
+			align-items: center;
+			z-index: 1000;
+			padding: 20px;
+		}
+
+		.note-modal.active {
+			display: flex;
+			animation: fadeIn 0.3s ease;
+		}
+
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+
+		.note-content {
+			background: linear-gradient(135deg, #fff9fb 0%, #fff0f5 100%);
+			border-radius: 20px;
+			padding: 30px;
+			max-width: 500px;
+			width: 100%;
+			box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+			position: relative;
+			border: 3px solid rgba(255, 182, 193, 0.3);
+			transform: scale(0.9);
+			animation: notePop 0.4s ease 0.1s forwards;
+		}
+
+		@keyframes notePop {
+			to { transform: scale(1); }
+		}
+
+		.note-content h3 {
+			color: #d6336c;
+			margin-bottom: 20px;
+			font-size: 24px;
+			text-align: center;
+			border-bottom: 2px solid rgba(214, 51, 108, 0.2);
+			padding-bottom: 10px;
+		}
+
+		.note-text {
+			color: #5a3d40;
+			font-size: 16px;
+			line-height: 1.6;
+			margin-bottom: 20px;
+			text-align: center;
+			font-family: 'Georgia', serif;
+		}
+
+		.close-note {
+			position: absolute;
+			top: 15px;
+			right: 15px;
+			background: #ff6b9d;
+			color: white;
+			border: none;
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			cursor: pointer;
+			font-size: 18px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* Contenedor principal */
+		.container {
+			max-width: 1000px;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 30px;
+			position: relative;
+			z-index: 2;
+		}
+
+		/* Encabezado */
+		.header {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.header h1 {
+			color: #d6336c;
+			font-size: 42px;
+			font-weight: 800;
+			margin-bottom: 10px;
+			letter-spacing: 0.5px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+			background: linear-gradient(135deg, #d6336c, #ff6b9d);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.header p {
+			color: #a61e4d;
+			font-size: 18px;
+			font-style: italic;
+			opacity: 0.9;
+		}
+
+		/* Secciones */
+		.section {
+			background: linear-gradient(135deg, #ffffff 0%, #fff9fb 100%);
+			border-radius: 20px;
+			padding: 30px;
+			box-shadow: 0 15px 50px rgba(255, 105, 180, 0.15);
+			border: 2px solid rgba(255, 182, 193, 0.2);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.section::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 5px;
+			background: linear-gradient(90deg, #ff6b9d, #ff9ab8, #ff6b9d);
+			z-index: 1;
+		}
+
+		.section-title {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			margin-bottom: 25px;
+			color: #d6336c;
+			font-size: 28px;
+			font-weight: 700;
+		}
+
+		.section-title span {
+			font-size: 32px;
+		}
+
+		/* Contenedor de imagen Spotify */
+		.spotify-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-top: 20px;
+		}
+
+		.spotify-image-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-bottom: 20px;
+			width: 100%;
+		}
+
+		.spotify-image {
+			max-width: 400px;
+			width: 100%;
+			height: auto;
+			border-radius: 15px;
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+			border: 5px solid white;
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.spotify-image:hover {
+			transform: scale(1.02);
+			box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+		}
+
+		.spotify-text {
+			color: #5a3d40;
+			margin-top: 15px;
+			text-align: center;
+			font-size: 16px;
+			line-height: 1.5;
+			max-width: 600px;
+		}
+
+		/* Dibujo de amor en esquina */
+.love-drawing {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    width: 140px;
+    height: 140px;
+    z-index: 3;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+.love-drawing:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.drawing-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.heart-drawing {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 5px 15px rgba(214, 51, 108, 0.3));
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.03); }
+}
+
+.drawing-label {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(214, 51, 108, 0.9);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive móvil */
+@media (max-width: 768px) {
+    .love-drawing {
+        width: 40px;
+        height: 40px;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .drawing-label {
+        font-size: 14px;
+        padding: 6px 16px;
+        bottom: -30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .love-drawing {
+        width: 150px;
+        height: 150px;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .drawing-label {
+        font-size: 12px;
+        padding: 4px 10px;
+        bottom: -20px;
+    }
+}
+
+		/* Botones */
+		.buttons-container {
+			display: flex;
+			gap: 15px;
+			justify-content: center;
+			margin-top: 30px;
+			flex-wrap: wrap;
+		}
+
+		.btn {
+			padding: 14px 35px;
+			background: linear-gradient(135deg, #ff6b9d 0%, #d6336c 100%);
+			color: #fff;
+			border: none;
+			border-radius: 50px;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: 700;
+			transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+			box-shadow: 0 8px 25px rgba(214, 51, 108, 0.3);
+			position: relative;
+			overflow: hidden;
+			letter-spacing: 0.3px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			min-width: 180px;
+			justify-content: center;
+		}
+
+		.btn::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+			transition: left 0.6s ease;
+		}
+
+		.btn:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 12px 35px rgba(214, 51, 108, 0.4);
+		}
+
+		.btn:hover::after {
+			left: 100%;
+		}
+
+		.btn-secondary {
+			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+			color: #495057;
+			border: 2px solid #dee2e6;
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+		}
+
+		.btn-secondary:hover {
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+			border-color: #ced4da;
+		}
+
+		/* Modal de imagen (nuevo) */
+		.image-modal {
+			position: fixed;
+			inset: 0;
+			display: none;
+			justify-content: center;
+			align-items: center;
+			background: rgba(0,0,0,0.75);
+			z-index: 2000;
+			padding: 20px;
+		}
+		.image-modal.active { display: flex; }
+		.image-content {
+			max-width: 90%;
+			max-height: 90%;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+		}
+		.image-content img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+		.image-close {
+			position: absolute;
+			top: 18px;
+			right: 18px;
+			background: rgba(255,255,255,0.9);
+			border: none;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			font-size: 18px;
+			cursor: pointer;
+			z-index: 2100;
+		}
+
+		/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        gap: 20px;
+    }
+    
+    .header h1 {
+        font-size: 32px;
+    }
+    
+    .section {
+        padding: 25px 20px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .spotify-image {
+        max-width: 350px;
+    }
+    
+    /* ❤️ Corazón ajustado */
+    .love-drawing {
+        width: 62px;     /* un tris más grande */
+        height: 62px;    /* un tris más grande */
+        bottom: 32px;    /* un tris más arriba */
+        right: 20px;
+    }
+    
+    .drawing-label {
+        font-size: 14px;
+        padding: 6px 16px;
+        bottom: -30px;
+    }
+    
+    .buttons-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 28px;
+    }
+    
+    .header p {
+        font-size: 16px;
+    }
+    
+    .section {
+        padding: 20px 15px;
+    }
+    
+    .section-title {
+        font-size: 22px;
+    }
+    
+    .spotify-image {
+        max-width: 300px;
+    }
+    
+    /* ❤️ Corazón ajustado también aquí */
+    .love-drawing {
+        width: 62px;     /* un tris más grande */
+        height: 62px;    /* un tris más grande */
+        bottom: 25px;    /* un tris más arriba */
+        right: 15px;
+    }
+    
+    .drawing-label {
+        font-size: 12px;
+        padding: 4px 10px;
+        bottom: -20px;
+        
+    }
+    
+    .note-content {
+        padding: 20px;
+    }
+    
+    .note-content h3 {
+        font-size: 20px;
+    }
+    
+    .spotify-text {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+}
+
+	</style>
+</head>
+<body>
+	<!-- Contenedor de corazones interactivos -->
+	<div id="hearts-container"></div>
+
+	<!-- Modal para notas de amor -->
+	<div class="note-modal" id="noteModal">
+		<div class="note-content">
+			<button class="close-note" id="closeNote">×</button>
+			<h3 id="noteTitle">Nota de Amor</h3>
+			<p class="note-text" id="noteText">Cargando nota de amor...</p>
+		</div>
+	</div>
+
+	<!-- Dibujo de amor en esquina -->
+<div class="love-drawing" id="loveDrawing">
+    <div class="drawing-container">
+        <svg class="heart-drawing" viewBox="0 0 200 200">
+            <path fill="#ff6b9d" d="M100,180 C150,140 180,100 180,60 C180,30 150,10 120,10 C100,10 80,20 70,40 C60,20 40,10 20,10 C-10,10 -20,30 -20,60 C-20,100 10,140 60,180 C80,200 90,190 100,180 Z" />
+            <path fill="#d6336c" d="M100,160 C140,130 160,100 160,70 C160,50 140,30 120,30 C100,30 80,40 70,60 C60,40 40,30 20,30 C0,30 -10,50 -10,70 C-10,100 10,130 50,160 C70,180 80,170 100,160 Z" />
+        </svg>
+    </div>
+</div>
+
+
+	<div class="container">
+		<!-- Encabezado -->
+		<header class="header">
+			<h1>Música y Notas</h1>
+			<p>Una canción especial y mensajes del corazón</p>
+		</header>
+
+		<!-- Sección de Spotify / Notas -->
+		<section class="section">
+			<div class="section-title">
+				
+				<h2>cancion del corazon</h2>
+			</div>
+
+			<p style="color: #5a3d40; margin-bottom: 20px; line-height: 1.6;">
+				Aquí quiero expresar lo que siento: cada palabra nace desde mi corazón, y para acompañarlas he elegido una canción que te dedico con todo mi amor. La música se convierte en mi voz cuando las palabras no alcanzan, porque en esa melodía está guardado lo que significas en mi vida. Esta canción es mi regalo para ti: que cada nota sea un recuerdo compartido y que cada verso sea la prueba de cuánto te quiero
+			</p>
+
+			<div class="spotify-container">
+    <!-- Contenedor de la imagen QR -->
+    <div class="spotify-container">
+    <div class="spotify-image-container">
+
+        <a id="spotifyLink" href="../images/cancion.jpg" target="_blank" rel="noopener">
+            <img 
+                src="../images/cancion.jpg"
+                alt="Código QR de la canción creada especialmente para ti"
+                class="spotify-image"
+                id="spotifyImage"
+                onerror="this.src='https://via.placeholder.com/400x400/ff6b9d/ffffff?text=Imagen+no+encontrada';"
+            >
+        </a>
+
+        <p class="spotify-text">
+            Escanea el código y escucha la canción: está dedicada solo a ti, porque en su melodía guardé todo lo que siento.
+        </p>
+
+    </div>
+</div>
+
+			
+	
+
+
+		<!-- Botones de acción -->
+		<div class="buttons-container">
+			<button class="btn" onclick="location.href='../principal/diseño.html'">
+				<span>←</span>
+				<span>Volver </span>
+			</button>
+			<button class="btn btn-secondary" onclick="createMoreHearts()">
+				<span></span>
+				<span>Más Corazones</span>
+			</button>
+			<button class="btn btn-secondary" onclick="showRandomNote()">
+				<span></span>
+				<span>Nota Aleatoria</span>
+			</button>
+		</div>
+	</div>
+
+	<!-- Modal para ver la imagen en grande -->
+	<div class="image-modal" id="imageModal" aria-hidden="true">
+		<button class="image-close" id="imageClose" aria-label="Cerrar">×</button>
+		<div class="image-content" id="imageContent">
+			<img src="" alt="Imagen ampliada" id="modalImage">
+		</div>
+	</div>
+
+	<script>
+		// Notas de amor
+const loveNotes = [
+  {
+    title: "Para Ti",
+    message: "Cada vez que escucho esta canción, recuerdo lo especial que eres y lo mucho que significas en mi vida."
+  },
+  {
+    title: "Nuestra Canción",
+    message: "Hay una melodía que siempre me lleva a pensar en aquel primer momento que compartimos juntos."
+  },
+  {
+    title: "Bajo las Estrellas",
+    message: "Imagino que estamos bailando bajo las estrellas, con la música de fondo y tu presencia cerca de mí."
+  },
+  {
+    title: "Mi Melodía",
+    message: "Tu risa es como una canción alegre, tu mirada como una melodía suave que siempre me acompaña."
+  },
+  {
+    title: "Sincronía Perfecta",
+    message: "Como esta música, nuestras emociones parecen latir al mismo ritmo, creando una armonía única."
+  },
+  {
+    title: "Mi Refugio",
+    message: "En medio del ruido del mundo, tu compañía es la melodía tranquila que me da paz."
+  },
+  {
+    title: "Eterno",
+    message: "Algunas canciones nunca terminan, se repiten una y otra vez, igual que los recuerdos que guardo contigo."
+  },
+  {
+    title: "Nuestro Soundtrack",
+    message: "Cada instante compartido se siente como una escena de película con la banda sonora perfecta."
+  }
+];
+
+
+		// Variables globales
+		const heartsContainer = document.getElementById('hearts-container');
+		const noteModal = document.getElementById('noteModal');
+		const noteTitle = document.getElementById('noteTitle');
+		const noteText = document.getElementById('noteText');
+		const closeNote = document.getElementById('closeNote');
+		const loveDrawing = document.getElementById('loveDrawing');
+
+		// Crear corazones interactivos
+		function createHeart(x, y, noteIndex) {
+			const heart = document.createElement('div');
+			heart.className = 'heart';
+			heart.innerHTML = '❤';
+			
+			// Posicionar
+			heart.style.left = `${x}px`;
+			heart.style.top = `${y}px`;
+			
+			// Tamaño aleatorio
+			const size = 20 + Math.random() * 30;
+			heart.style.fontSize = `${size}px`;
+			
+			// Color aleatorio
+			const colors = ['#ff6b9d', '#ff8fab', '#ffb3c6', '#ff4d7d', '#ff3366'];
+			heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+			
+			// Animación flotante única
+			const floatDuration = 4 + Math.random() * 4;
+			heart.style.animationDuration = `${floatDuration}s`;
+			heart.style.animationDelay = `${Math.random() * 2}s`;
+			
+			// Almacenar índice de nota
+			heart.dataset.noteIndex = noteIndex;
+			
+			// Evento click
+			heart.addEventListener('click', function(e) {
+				e.stopPropagation();
+				showNote(noteIndex);
+			});
+			
+			// Añadir al contenedor
+			heartsContainer.appendChild(heart);
+			
+			return heart;
+		}
+
+		// Mostrar nota de amor
+		function showNote(index) {
+			const note = loveNotes[index];
+			noteTitle.textContent = note.title;
+			noteText.textContent = note.message;
+			noteModal.classList.add('active');
+			
+			// Cerrar modal con escape
+			const closeOnEscape = (e) => {
+				if (e.key === 'Escape') {
+					noteModal.classList.remove('active');
+					document.removeEventListener('keydown', closeOnEscape);
+				}
+			};
+			document.addEventListener('keydown', closeOnEscape);
+		}
+
+		// Mostrar nota aleatoria
+		function showRandomNote() {
+			const randomIndex = Math.floor(Math.random() * loveNotes.length);
+			showNote(randomIndex);
+		}
+
+		// Crear más corazones
+		function createMoreHearts() {
+			// Crear 5 corazones nuevos en posiciones aleatorias
+			for (let i = 0; i < 5; i++) {
+				const x = Math.random() * (window.innerWidth - 100);
+				const y = Math.random() * (window.innerHeight - 100);
+				const noteIndex = Math.floor(Math.random() * loveNotes.length);
+				createHeart(x, y, noteIndex);
+			}
+		}
+
+		// Inicializar corazones
+		function initializeHearts() {
+			// Crear corazones iniciales
+			for (let i = 0; i < 8; i++) {
+				setTimeout(() => {
+					const x = 50 + Math.random() * (window.innerWidth - 100);
+					const y = 50 + Math.random() * (window.innerHeight - 200);
+					createHeart(x, y, i % loveNotes.length);
+				}, i * 300);
+			}
+		}
+
+		// Event Listeners
+		closeNote.addEventListener('click', () => {
+			noteModal.classList.remove('active');
+		});
+
+		noteModal.addEventListener('click', (e) => {
+			if (e.target === noteModal) {
+				noteModal.classList.remove('active');
+			}
+		});
+
+		loveDrawing.addEventListener('click', () => {
+  // Nota especial para el corazón grande
+  noteTitle.textContent = "Nota Especial";
+  noteText.textContent = "Este corazón guarda todo lo que siento. Cada latido es un recuerdo de lo que hemos compartido, cada pulsación es una señal de lo importante que eres en mi vida. Eres la melodía que nunca quiero que termine, la canción que siempre quiero escuchar.";
+  noteModal.classList.add('active');
+
+			
+			// Animación especial
+			loveDrawing.style.animation = 'pulse 0.5s ease';
+			setTimeout(() => {
+				loveDrawing.style.animation = 'heartbeat 1.5s ease-in-out infinite';
+			}, 500);
+		});
+
+		// Nuevas referencias para la imagen clicable y el modal
+		const spotifyLink = document.getElementById('spotifyLink');
+		const spotifyImage = document.getElementById('spotifyImage');
+		const imageModal = document.getElementById('imageModal');
+		const modalImage = document.getElementById('modalImage');
+		const imageClose = document.getElementById('imageClose');
+
+		// Actualiza el href del enlace cada vez que cambie la src de la imagen
+		function syncImageLink() {
+			// usar la src actual mostrada en la página (puede ser placeholder)
+			spotifyLink.href = spotifyImage.src;
+		}
+
+		// Abrir modal con la imagen actual
+		function openImageModal(e) {
+			// si el usuario mantiene Ctrl/Meta o Shift, dejar que el enlace abra en nueva pestaña
+			if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+			e.preventDefault();
+			modalImage.src = spotifyImage.src;
+			imageModal.classList.add('active');
+			imageModal.setAttribute('aria-hidden', 'false');
+			// cerrar al presionar Escape
+			const escHandler = (ev) => {
+				if (ev.key === 'Escape') closeImageModal();
+			};
+			document.addEventListener('keydown', escHandler, { once: true });
+		}
+
+		function closeImageModal() {
+			imageModal.classList.remove('active');
+			imageModal.setAttribute('aria-hidden', 'true');
+			modalImage.src = '';
+		}
+
+		// Listeners
+		spotifyImage.addEventListener('load', syncImageLink);
+		spotifyImage.addEventListener('error', syncImageLink);
+		spotifyLink.addEventListener('click', openImageModal);
+		imageClose.addEventListener('click', closeImageModal);
+		imageModal.addEventListener('click', (e) => {
+			if (e.target === imageModal) closeImageModal();
+		});
+
+		// Inicializar
+		window.addEventListener('load', () => {
+			initializeHearts();
+			
+			// Ajustar para móviles
+			if (window.innerWidth <= 768) {
+				// Menos corazones en móvil
+				const existingHearts = document.querySelectorAll('.heart');
+				for (let i = 5; i < existingHearts.length; i++) {
+					if (existingHearts[i]) {
+						existingHearts[i].remove();
+					}
+				}
+			}
+		});
+
+		// Redimensionar ventana
+		window.addEventListener('resize', () => {
+			// Limpiar corazones fuera de la pantalla
+			const hearts = document.querySelectorAll('.heart');
+			hearts.forEach(heart => {
+				const rect = heart.getBoundingClientRect();
+				if (rect.right < 0 || rect.bottom < 0 || rect.left > window.innerWidth || rect.top > window.innerHeight) {
+					heart.remove();
+				}
+			});
+			
+			// Añadir más corazones si es necesario
+			if (document.querySelectorAll('.heart').length < 5) {
+				createMoreHearts();
+			}
+		});
+
+		// Efectos hover en botones
+		const buttons = document.querySelectorAll('.btn');
+		buttons.forEach(btn => {
+			btn.addEventListener('mouseenter', function() {
+				this.style.transform = 'translateY(-4px)';
+			});
+			
+			btn.addEventListener('mouseleave', function() {
+				this.style.transform = 'translateY(0)';
+			});
+		});
+	</script>
+</body>
+</html>

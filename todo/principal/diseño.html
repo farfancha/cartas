@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Carta de Amor</title>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #ffeff5 0%, #ffeaf2 50%, #fff5f9 100%);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			overflow: auto;
+		}
+
+		/* Contenedor principal - RESPONSIVE */
+		.container {
+			position: relative;
+			width: 100%;
+			max-width: 1000px;
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		/* Escena del sobre */
+		.envelope-scene {
+			position: relative;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			gap: 40px;
+		}
+
+		/* SOBRE - RESPONSIVE */
+		.envelope {
+			position: relative;
+			width: 350px;
+			height: 250px;
+			cursor: pointer;
+			transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+			z-index: 10;
+		}
+
+		/* Parte frontal del sobre (base) */
+		.envelope-front {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, #ffc6d9 0%, #ff9ab8 100%);
+			border-radius: 12px;
+			box-shadow: 
+				0 20px 40px rgba(255, 105, 180, 0.25),
+				0 8px 20px rgba(0, 0, 0, 0.15),
+				inset 0 1px 0 rgba(255, 255, 255, 0.5);
+			border: 2px solid rgba(255, 255, 255, 0.4);
+			z-index: 2;
+		}
+
+		/* Detalle decorativo del sobre */
+		.envelope-detail {
+			position: absolute;
+			width: 92%;
+			height: 92%;
+			top: 4%;
+			left: 4%;
+			border: 1.5px solid rgba(255, 255, 255, 0.5);
+			border-radius: 10px;
+			z-index: 1;
+		}
+
+		/* Solapa triangular del sobre */
+		.envelope-flap {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 55%;
+			background: linear-gradient(135deg, #ff9ab8 0%, #ff6b9d 100%);
+			clip-path: polygon(0 0, 100% 0, 50% 100%);
+			border-radius: 12px 12px 0 0;
+			box-shadow: 
+				0 -8px 20px rgba(0, 0, 0, 0.15),
+				inset 0 8px 15px rgba(255, 255, 255, 0.4);
+			transform-origin: top center;
+			transform: rotateX(0deg);
+			transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+			z-index: 3;
+			border-top: 2px solid rgba(255, 255, 255, 0.6);
+		}
+
+		/* Línea de doblez en la solapa */
+		.flap-fold {
+			position: absolute;
+			bottom: 15px;
+			left: 15%;
+			width: 70%;
+			height: 2px;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+		}
+
+		/* CARTA INTERIOR - DISEÑO RESPONSIVE CON SCROLL MEJORADO */
+		.letter {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) scale(0.9);
+			background: linear-gradient(135deg, #fff9fb 0%, #fff0f5 100%);
+			border-radius: 16px;
+			padding: 40px;
+			opacity: 0;
+			overflow: hidden;
+			border: 2px solid rgba(255, 182, 193, 0.2);
+			box-sizing: border-box;
+			z-index: 1000;
+			pointer-events: none;
+			box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+			transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+			width: 600px;
+			height: 650px;
+			display: flex;
+			flex-direction: column;
+			max-width: 90vw;
+			max-height: 85vh;
+		}
+
+		/* Carta revelada */
+		.letter.revealed {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+			pointer-events: all;
+			box-shadow: 
+				0 30px 80px rgba(0, 0, 0, 0.2),
+				0 15px 40px rgba(214, 51, 108, 0.15),
+				0 8px 20px rgba(0, 0, 0, 0.1);
+		}
+
+		/* Cuando el sobre se abre */
+		.envelope.open {
+			opacity: 0;
+			transform: translateY(-40px) scale(0.9);
+			pointer-events: none;
+		}
+
+		.envelope.open .envelope-flap {
+			transform: rotateX(-180deg);
+		}
+
+		/* Contenido de la carta - SCROLL MEJORADO */
+		.letter-content {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden; /* Importante para que funcione el scroll */
+		}
+
+		.letter-header {
+			text-align: center;
+			margin-bottom: 25px;
+			padding-bottom: 20px;
+			border-bottom: 2px solid rgba(255, 182, 193, 0.3);
+			flex-shrink: 0; /* No se reduce */
+		}
+
+		.letter-title {
+			font-size: 32px;
+			color: #d6336c;
+			font-weight: 800;
+			margin: 0 0 10px 0;
+			letter-spacing: 0.5px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.letter-subtitle {
+			font-size: 18px;
+			color: #a61e4d;
+			font-style: italic;
+			margin: 0;
+			letter-spacing: 0.3px;
+		}
+
+		/* CONTENIDO CON SCROLL - ARREGLADO */
+		.letter-body-container {
+			flex: 1;
+			overflow-y: auto;
+			margin-bottom: 20px;
+			padding-right: 10px;
+			min-height: 200px; /* Asegura altura mínima */
+		}
+
+		.letter-body {
+			color: #5a3d40;
+			font-size: 17px;
+			line-height: 1.8;
+			text-align: justify;
+			font-family: 'Georgia', serif;
+			padding-bottom: 10px;
+		}
+
+		.letter-body-container::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.letter-body-container::-webkit-scrollbar-track {
+			background: rgba(255, 182, 193, 0.1);
+			border-radius: 4px;
+		}
+
+		.letter-body-container::-webkit-scrollbar-thumb {
+			background: rgba(214, 51, 108, 0.3);
+			border-radius: 4px;
+			transition: background 0.3s ease;
+		}
+
+		.letter-body-container::-webkit-scrollbar-thumb:hover {
+			background: rgba(214, 51, 108, 0.5);
+		}
+
+		.letter-footer {
+			text-align: center;
+			margin-top: auto; /* Empuja al final */
+			color: #d6336c;
+			font-weight: 600;
+			padding-top: 20px;
+			border-top: 1px solid rgba(255, 182, 193, 0.2);
+			flex-shrink: 0; /* No se reduce */
+		}
+
+		/* Botón dentro de la carta - DISEÑO MEJORADO */
+		.letter-btn {
+			display: inline-block;
+			padding: 14px 40px;
+			background: linear-gradient(135deg, #ff6b9d 0%, #d6336c 100%);
+			color: white;
+			border: none;
+			border-radius: 50px;
+			font-size: 17px;
+			font-weight: 700;
+			cursor: pointer;
+			box-shadow: 0 8px 25px rgba(214, 51, 108, 0.4);
+			transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+			margin-top: 15px;
+			letter-spacing: 0.5px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.letter-btn::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+			transition: left 0.6s ease;
+		}
+
+		.letter-btn:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 12px 35px rgba(214, 51, 108, 0.5);
+		}
+
+		.letter-btn:hover::after {
+			left: 100%;
+		}
+
+		.letter-btn:active {
+			transform: translateY(-1px);
+			box-shadow: 0 6px 20px rgba(214, 51, 108, 0.4);
+		}
+
+		/* Efecto de líneas de papel */
+		.paper-lines {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			opacity: 0.06;
+			background: repeating-linear-gradient(
+				to bottom,
+				transparent,
+				transparent 30px,
+				#d6336c 30px,
+				#d6336c 31px
+			);
+		}
+
+		/* NOTA AL PIE - DISEÑO MEJORADO */
+		.footer-note {
+			position: absolute;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			color: rgba(166, 30, 77, 0.6);
+			font-size: 14px;
+			font-style: italic;
+			background: rgba(255, 255, 255, 0.3);
+			padding: 8px 20px;
+			border-radius: 20px;
+			backdrop-filter: blur(5px);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+			z-index: 5;
+		}
+
+		/* MODAL "VER MÁS CARTAS" - DISEÑO BONITO */
+		.more-view {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(255, 245, 249, 0.98);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 2000;
+			opacity: 0;
+			pointer-events: none;
+			transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+			backdrop-filter: blur(10px);
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		.more-view.open {
+			opacity: 1;
+			pointer-events: all;
+		}
+
+		.more-card {
+			background: linear-gradient(135deg, #ffffff 0%, #fff9fb 100%);
+			border-radius: 24px;
+			padding: 40px;
+			width: 100%;
+			max-width: 600px;
+			box-shadow: 
+				0 30px 80px rgba(0, 0, 0, 0.15),
+				0 15px 40px rgba(214, 51, 108, 0.1),
+				0 8px 20px rgba(0, 0, 0, 0.08);
+			text-align: center;
+			border: 2px solid rgba(255, 182, 193, 0.3);
+			transform: scale(0.95);
+			transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+			position: relative;
+			overflow: hidden;
+			max-height: 90vh;
+			overflow-y: auto;
+		}
+
+		.more-view.open .more-card {
+			transform: scale(1);
+		}
+
+		/* Decoración del modal */
+		.more-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 4px;
+			background: linear-gradient(90deg, #ff6b9d, #ff9ab8, #ff6b9d);
+			z-index: 1;
+		}
+
+		.more-card h3 {
+			color: #d6336c;
+			margin-top: 0;
+			margin-bottom: 25px;
+			font-size: 28px;
+			font-weight: 800;
+			letter-spacing: 0.5px;
+		}
+
+		.more-card p {
+			color: #5a3d40;
+			font-size: 16px;
+			line-height: 1.6;
+			margin-bottom: 30px;
+			opacity: 0.8;
+		}
+
+		/* Lista de opciones - DISEÑO MEJORADO */
+		.more-list {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			margin: 30px 0;
+		}
+
+		.option-btn {
+			padding: 20px 25px;
+			background: linear-gradient(135deg, #fff0f5 0%, #ffeaf2 100%);
+			border: 2px solid #ffc6d9;
+			border-radius: 15px;
+			font-size: 18px;
+			color: #a61e4d;
+			cursor: pointer;
+			transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			position: relative;
+			overflow: hidden;
+			text-align: left;
+			letter-spacing: 0.3px;
+		}
+
+		.option-btn::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+			transition: left 0.6s ease;
+		}
+
+		.option-btn:hover {
+			background: linear-gradient(135deg, #ffeaf2 0%, #ffc6d9 100%);
+			transform: translateY(-4px);
+			box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+			border-color: #ff9ab8;
+		}
+
+		.option-btn:hover::before {
+			left: 100%;
+		}
+
+		/* Botón cerrar - DISEÑO MEJORADO */
+		.close-btn {
+			padding: 12px 35px;
+			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+			border: 2px solid #dee2e6;
+			border-radius: 50px;
+			color: #495057;
+			cursor: pointer;
+			font-weight: 700;
+			transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+			font-size: 16px;
+			letter-spacing: 0.3px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.close-btn:hover {
+			background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+			border-color: #ced4da;
+		}
+
+		/* Animación sutil del sobre */
+		@keyframes float {
+			0%, 100% { 
+				transform: translateY(0) rotate(0deg); 
+			}
+			25% { 
+				transform: translateY(-12px) rotate(0.5deg); 
+			}
+			75% { 
+				transform: translateY(-12px) rotate(-0.5deg); 
+			}
+		}
+
+		.envelope:not(.open) {
+			animation: float 4s ease-in-out infinite;
+		}
+
+		/* Efecto hover sobre el sobre */
+		.envelope:hover:not(.open) {
+			transform: scale(1.05);
+			filter: brightness(1.08);
+			transition: transform 0.3s ease, filter 0.3s ease;
+		}
+
+		/* CORAZONES ANIMADOS */
+		#hearts-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			z-index: 5;
+			overflow: hidden;
+		}
+
+		.heart {
+			position: absolute;
+			font-size: 24px;
+			opacity: 0;
+			animation: heartFloat linear forwards;
+			z-index: 5;
+		}
+
+		@keyframes heartFloat {
+			0% {
+				transform: translateY(100vh) rotate(0deg);
+				opacity: 0;
+			}
+			10% {
+				opacity: 1;
+			}
+			90% {
+				opacity: 1;
+			}
+			100% {
+				transform: translateY(-100px) rotate(360deg);
+				opacity: 0;
+			}
+		}
+
+		/* RESPONSIVE PARA TABLETS */
+		@media (max-width: 1024px) {
+			.letter {
+				width: 550px;
+				height: 600px;
+				padding: 35px;
+			}
+			
+			.letter-title {
+				font-size: 30px;
+			}
+			
+			.letter-btn {
+				padding: 13px 35px;
+				font-size: 16px;
+			}
+			
+			.more-card {
+				padding: 35px;
+				max-width: 550px;
+			}
+			
+			.option-btn {
+				padding: 18px 22px;
+				font-size: 17px;
+			}
+		}
+
+		/* RESPONSIVE PARA CELULAR - SCROLL ARREGLADO */
+		@media (max-width: 768px) {
+			.container {
+				padding: 15px;
+			}
+			
+			.envelope {
+				width: 300px;
+				height: 215px;
+			}
+			
+			.envelope-front {
+				border-radius: 10px;
+			}
+			
+			.envelope-flap {
+				border-radius: 10px 10px 0 0;
+			}
+			
+			.letter {
+				width: 95% !important;
+				height: 85vh !important;
+				max-height: 85vh !important;
+				padding: 25px;
+				border-radius: 14px;
+			}
+			
+			.letter-content {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.letter-body-container {
+				flex: 1;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+			}
+			
+			.letter-title {
+				font-size: 26px;
+			}
+			
+			.letter-subtitle {
+				font-size: 16px;
+			}
+			
+			.letter-body {
+				font-size: 15px;
+				line-height: 1.6;
+			}
+			
+			.letter-btn {
+				padding: 12px 30px;
+				font-size: 15px;
+				width: 100%;
+				max-width: 280px;
+				margin: 15px auto 0;
+			}
+			
+			.letter-footer {
+				font-size: 14px;
+				margin-top: auto;
+				padding-top: 15px;
+			}
+			
+			.more-card {
+				padding: 25px;
+				border-radius: 20px;
+				max-height: 85vh;
+				overflow-y: auto;
+			}
+			
+			.more-card h3 {
+				font-size: 24px;
+				margin-bottom: 20px;
+			}
+			
+			.more-card p {
+				font-size: 15px;
+				margin-bottom: 25px;
+			}
+			
+			.option-btn {
+				padding: 16px 20px;
+				font-size: 16px;
+				border-radius: 12px;
+			}
+			
+			.close-btn {
+				padding: 10px 30px;
+				font-size: 15px;
+			}
+			
+			.footer-note {
+				font-size: 13px;
+				padding: 6px 16px;
+				bottom: 15px;
+			}
+		}
+
+		/* RESPONSIVE PARA CELULARES MUY PEQUEÑOS */
+		@media (max-width: 480px) {
+			.envelope {
+				width: 260px;
+				height: 185px;
+			}
+			
+			.letter {
+				padding: 20px;
+				height: 90vh !important;
+				max-height: 90vh !important;
+			}
+			
+			.letter-title {
+				font-size: 22px;
+			}
+			
+			.letter-subtitle {
+				font-size: 14px;
+			}
+			
+			.letter-body {
+				font-size: 14px;
+				line-height: 1.5;
+			}
+			
+			.letter-btn {
+				padding: 11px 25px;
+				font-size: 14px;
+			}
+			
+			.more-card {
+				padding: 20px;
+			}
+			
+			.more-card h3 {
+				font-size: 22px;
+			}
+			
+			.option-btn {
+				padding: 14px 18px;
+				font-size: 15px;
+				gap: 8px;
+			}
+			
+			.footer-note {
+				font-size: 12px;
+				padding: 5px 14px;
+				bottom: 10px;
+			}
+			
+			.more-list {
+				gap: 15px;
+			}
+		}
+
+		/* RESPONSIVE PARA PANTALLAS GRANDES */
+		@media (min-width: 1600px) {
+			.container {
+				max-width: 1200px;
+			}
+			
+			.envelope {
+				width: 400px;
+				height: 285px;
+			}
+			
+			.letter {
+				width: 700px;
+				height: 750px;
+				padding: 50px;
+			}
+			
+			.letter-title {
+				font-size: 36px;
+			}
+			
+			.letter-body {
+				font-size: 18px;
+			}
+		}
+
+		/* Ajuste para altura pequeña - SCROLL MEJORADO */
+		@media (max-height: 700px) {
+			.letter {
+				height: 90vh !important;
+				max-height: 90vh !important;
+				padding: 20px;
+			}
+			
+			.letter-title {
+				font-size: 22px;
+				margin-bottom: 8px;
+			}
+			
+			.letter-subtitle {
+				font-size: 14px;
+			}
+			
+			.letter-body {
+				font-size: 14px;
+				line-height: 1.5;
+			}
+			
+			.letter-btn {
+				padding: 10px 25px;
+				font-size: 14px;
+				margin-top: 10px;
+			}
+			
+			.letter-header {
+				margin-bottom: 15px;
+				padding-bottom: 15px;
+			}
+			
+			.letter-footer {
+				padding-top: 15px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Contenedor de corazones animados -->
+	<div id="hearts-container"></div>
+	
+	<div class="container">
+		<div class="envelope-scene">
+			<!-- SOBRE REALISTA -->
+			<div class="envelope" id="envelope" aria-label="Sobre cerrado. Haz clic para abrir.">
+				<!-- Parte frontal del sobre -->
+				<div class="envelope-front">
+					<div class="envelope-detail"></div>
+				</div>
+
+				<!-- Solapa del sobre -->
+				<div class="envelope-flap">
+					<div class="flap-fold"></div>
+				</div>
+			</div>
+
+			<!-- CARTA INTERIOR -->
+			<div class="letter" id="letter" aria-hidden="true" tabindex="-1">
+				<div class="paper-lines"></div>
+				<div class="letter-content">
+					<div class="letter-header">
+						<h1 class="letter-title">Para Mi Vida</h1>
+						<p class="letter-subtitle">Con todo mi corazón</p>
+					</div>
+
+					<!-- CONTENEDOR CON SCROLL -->
+					<div class="letter-body-container">
+						<div class="letter-body">
+							<p>Mi cielito, te hice esta carta de una forma un poco creativa. No sé si sea la mejor manera de hacerlo, pero me gustaría que quedara como un recuerdo.</p>
+							
+							<p>Te hice esta carta virtual porque, como tú sabes, no sirvo para expresar lo que siento y pienso teniéndote enfrente.</p>
+							
+							<p>Entonces opté por esta solución, pues para que, si en algún modo, esta carta te ayude a resolver tus dudas o algunos pensamientos que tengas.</p>
+							
+							<p>Quiero que sepas que cada palabra que escribo nace desde lo más sincero de mí. Tal vez no sea perfecta, pero refleja lo que muchas veces me cuesta decir con la voz.</p>
+							
+							<p>Esta carta es mi manera de abrirte mi corazón, de dejarte ver lo que pienso cuando me quedo en silencio.</p>
+							
+							<p>Me gustaría que la guardes como un pequeño recuerdo, porque detrás de cada línea está mi intención de que sepas cuánto significas para mí</p>
+
+                            <p>Más allá de lo que escribo, lo importante es que sepas que eres alguien especial en mi vida, y que esta carta es solo un reflejo de lo mucho que quiero que lo tengas presente</p>
+							
+							
+							<p>Con todo mi amor, por siempre y para siempre.</p>
+						</div>
+					</div>
+
+					<div class="letter-footer">
+						Con cariño sincero,<br>
+						<strong>te quiero demasiado.</strong>
+						<br><br>
+						<button class="letter-btn" id="moreBtn">Ver más cartas</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="footer-note">Haz clic en el sobre para abrir la carta</div>
+		</div>
+	</div>
+
+	<!-- MODAL "VER MÁS CARTAS" - DISEÑO MEJORADO -->
+	<div class="more-view" id="moreView" aria-hidden="true">
+		<div class="more-card">
+			<h3>Elige cualquier carta que desees </h3>
+			<p>Selecciona el tipo de carta que quieras saber primero</p>
+			
+			<div class="more-list">
+				<button class="option-btn" id="optAmor">
+					<span style="font-size: 22px;"></span>
+					<span>Carta de Amor</span>
+				</button>
+				<button class="option-btn" id="optPerdon">
+					<span style="font-size: 22px;"></span>
+					<span>Carta de Disculpas</span>
+				</button>
+				<button class="option-btn" id="optExpresar">
+					<span style="font-size: 22px;"></span>
+					<span>Carta de Sentimientos</span>
+				</button>
+                  <button class="option-btn" id="optCanciones">
+                    <span style="font-size: 22px;"></span>
+                    <span>Canciones y Notas</span>
+                 </button>
+			</div>
+			
+			<button class="close-btn" id="closeMore">Cerrar</button>
+		</div>
+	</div>
+
+	<script>
+		(function(){
+			const envelope = document.getElementById('envelope');
+			const letter = document.getElementById('letter');
+			const moreBtn = document.getElementById('moreBtn');
+			const moreView = document.getElementById('moreView');
+			const closeMore = document.getElementById('closeMore');
+			const optAmor = document.getElementById('optAmor');
+			const optPerdon = document.getElementById('optPerdon');
+			const optExpresar = document.getElementById('optExpresar');
+			const heartsContainer = document.getElementById('hearts-container');
+			
+			let isOpen = false;
+			
+			// FUNCIÓN PARA CREAR CORAZONES ANIMADOS
+			function createHeart() {
+				const heart = document.createElement('div');
+				heart.className = 'heart';
+				heart.innerHTML = '❤';
+				
+				// Tamaño aleatorio
+				const size = 20 + Math.random() * 30;
+				heart.style.fontSize = `${size}px`;
+				
+				// Color aleatorio
+				const colors = ['#ff6b9d', '#ff8fab', '#ffb3c6', '#ff4d7d', '#ff3366'];
+				heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+				
+				// Posición inicial aleatoria
+				const startX = Math.random() * 100;
+				heart.style.left = `${startX}%`;
+				
+				// Duración aleatoria
+				const duration = 8 + Math.random() * 7;
+				heart.style.animationDuration = `${duration}s`;
+				
+				// Retraso aleatorio
+				const delay = Math.random() * 5;
+				heart.style.animationDelay = `${delay}s`;
+				
+				// Añadir al contenedor
+				heartsContainer.appendChild(heart);
+				
+				// Eliminar después de la animación
+				setTimeout(() => {
+					if (heart.parentNode) {
+						heart.parentNode.removeChild(heart);
+					}
+				}, (duration + delay) * 1000);
+			}
+			
+			// Crear corazones periódicamente
+			let heartInterval = setInterval(createHeart, 800);
+			
+			// Función para abrir el sobre
+			function openEnvelope() {
+				if (isOpen) return;
+				
+				isOpen = true;
+				
+				// Abrir la solapa del sobre
+				envelope.classList.add('open');
+				
+				// Detener animación de flotación
+				envelope.style.animation = 'none';
+				
+				// Después de la animación, mostrar la carta
+				setTimeout(() => {
+					letter.classList.add('revealed');
+					letter.setAttribute('aria-hidden', 'false');
+					letter.setAttribute('tabindex', '0');
+					
+					// Enfocar la carta para accesibilidad
+					setTimeout(() => {
+						letter.focus();
+					}, 100);
+					
+					// Prevenir scroll en el fondo PERO permitir scroll en la carta
+					document.body.style.overflow = 'hidden';
+					
+					// Asegurar que la carta tenga scroll interno
+					const letterBodyContainer = letter.querySelector('.letter-body-container');
+					if (letterBodyContainer) {
+						letterBodyContainer.style.overflowY = 'auto';
+					}
+				}, 600);
+			}
+			
+			// Función para cerrar la carta
+			function closeLetter() {
+				if (!isOpen) return;
+				
+				letter.classList.remove('revealed');
+				envelope.classList.remove('open');
+				envelope.style.animation = 'float 4s ease-in-out infinite';
+				envelope.style.opacity = '1';
+				envelope.style.transform = '';
+				isOpen = false;
+				document.body.style.overflow = 'auto';
+				
+				// Restaurar foco al sobre
+				setTimeout(() => {
+					envelope.focus();
+				}, 100);
+			}
+			
+			// Función para abrir modal "Ver más cartas"
+			function openMoreModal() {
+				moreView.classList.add('open');
+				moreView.setAttribute('aria-hidden', 'false');
+				document.body.style.overflow = 'hidden';
+			}
+			
+			// Función para cerrar modal "Ver más cartas"
+			function closeMoreModal() {
+				moreView.classList.remove('open');
+				moreView.setAttribute('aria-hidden', 'true');
+				document.body.style.overflow = 'auto';
+			}
+			
+			// Eventos del sobre
+			envelope.addEventListener('click', openEnvelope);
+			envelope.addEventListener('keydown', function(e) {
+				if ((e.key === 'Enter' || e.key === ' ') && !isOpen) {
+					e.preventDefault();
+					openEnvelope();
+				}
+			});
+			
+			// Accesibilidad del sobre
+			envelope.setAttribute('tabindex', '0');
+			envelope.setAttribute('role', 'button');
+			envelope.setAttribute('aria-label', 'Sobre cerrado. Haz clic para abrir la carta de amor');
+			
+			// Eventos del botón "Ver más cartas"
+			moreBtn.addEventListener('click', function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				openMoreModal();
+			});
+			
+			// Eventos del modal
+			closeMore.addEventListener('click', closeMoreModal);
+			
+			// Cerrar modal con Escape
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape') {
+					if (moreView.classList.contains('open')) {
+						closeMoreModal();
+					} else if (isOpen) {
+						closeLetter();
+					}
+				}
+			});
+			
+			// Cerrar carta al hacer clic fuera de ella
+			document.addEventListener('click', function(e) {
+				if (isOpen && !letter.contains(e.target) && !moreView.classList.contains('open')) {
+					closeLetter();
+				}
+			});
+			
+			// Cerrar modal al hacer clic fuera de él
+			moreView.addEventListener('click', function(e) {
+				if (e.target === moreView) {
+					closeMoreModal();
+				}
+			});
+			
+			// Redirecciones a otras vistas
+			optAmor.addEventListener('click', function() {
+				window.location.href = '../amor/vista3.html';
+			});
+			
+			optPerdon.addEventListener('click', function() {
+				window.location.href = '../perdon/vista.html';
+			});
+			
+			optExpresar.addEventListener('click', function() {
+				window.location.href = '../expresar/vista2.html';
+			});
+            optCanciones.addEventListener('click', function() {
+               window.location.href = '../cancion/vista4.html';
+            });
+			
+			// Ajuste responsive para scroll en móvil
+			function adjustResponsive() {
+				const isMobile = window.innerWidth <= 768;
+				const isSmallMobile = window.innerWidth <= 480;
+				const isShortScreen = window.innerHeight <= 700;
+				
+				if (isMobile) {
+					// Para móviles
+					letter.style.width = '95%';
+					letter.style.height = isShortScreen ? '90vh' : '85vh';
+					letter.style.maxHeight = isShortScreen ? '90vh' : '85vh';
+					
+					// Asegurar que el contenido sea scrollable
+					const letterBodyContainer = letter.querySelector('.letter-body-container');
+					if (letterBodyContainer) {
+						letterBodyContainer.style.flex = '1';
+						letterBodyContainer.style.minHeight = '150px';
+					}
+				} else {
+					// Para desktop
+					letter.style.width = '600px';
+					letter.style.height = '650px';
+					letter.style.maxHeight = '85vh';
+				}
+				
+				// Ajustar modal para móvil
+				if (isSmallMobile) {
+					document.querySelector('.more-card').style.maxHeight = '85vh';
+				}
+			}
+			
+			// Ajustar al cargar y al cambiar tamaño
+			window.addEventListener('load', adjustResponsive);
+			window.addEventListener('resize', adjustResponsive);
+			
+			// Ajustar inicialmente
+			adjustResponsive();
+			
+			// Efecto hover mejorado para el sobre
+			envelope.addEventListener('mouseenter', function() {
+				if (!isOpen) {
+					this.style.transform = 'scale(1.05)';
+				}
+			});
+			
+			envelope.addEventListener('mouseleave', function() {
+				if (!isOpen) {
+					this.style.transform = '';
+				}
+			});
+			
+			// Limpiar intervalos al salir
+			window.addEventListener('beforeunload', function() {
+				clearInterval(heartInterval);
+			});
+			
+			// Crear algunos corazones iniciales
+			for (let i = 0; i < 15; i++) {
+				setTimeout(createHeart, i * 300);
+			}
+		})();
+	</script>
+</body>
+</html>

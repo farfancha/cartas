@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1"/>
+	<title>Carta de Perdón</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			background: linear-gradient(135deg, #ffeff5 0%, #ffeaf2 50%, #fff5f9 100%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			padding: 20px;
+			position: relative;
+			overflow-x: hidden;
+		}
+
+		/* Corazones animados de fondo */
+		#hearts-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			z-index: 1;
+			overflow: hidden;
+		}
+
+		.heart {
+			position: absolute;
+			font-size: 20px;
+			opacity: 0;
+			animation: heartFloat linear forwards;
+			z-index: 1;
+			color: #ff6b9d;
+		}
+
+		@keyframes heartFloat {
+			0% {
+				transform: translateY(100vh) rotate(0deg);
+				opacity: 0;
+			}
+			10% {
+				opacity: 1;
+			}
+			90% {
+				opacity: 1;
+			}
+			100% {
+				transform: translateY(-100px) rotate(360deg);
+				opacity: 0;
+			}
+		}
+
+		/* Tarjeta principal */
+		.card {
+			max-width: 800px;
+			width: 100%;
+			background: linear-gradient(135deg, #ffffff 0%, #fff9fb 100%);
+			border-radius: 20px;
+			padding: 40px;
+			box-shadow: 
+				0 25px 70px rgba(255, 105, 180, 0.15),
+				0 10px 30px rgba(0, 0, 0, 0.08),
+				0 5px 15px rgba(0, 0, 0, 0.05);
+			text-align: center;
+			position: relative;
+			z-index: 2;
+			border: 2px solid rgba(255, 182, 193, 0.2);
+			transform: translateY(20px);
+			opacity: 0;
+			animation: cardEntrance 0.8s ease-out 0.3s forwards;
+			overflow: hidden;
+		}
+
+		@keyframes cardEntrance {
+			0% {
+				transform: translateY(20px);
+				opacity: 0;
+			}
+			100% {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		/* Detalle decorativo superior */
+		.card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 5px;
+			background: linear-gradient(90deg, #ff6b9d, #ff9ab8, #ff6b9d);
+			border-radius: 20px 20px 0 0;
+			z-index: 1;
+		}
+
+		/* Encabezado */
+		.header {
+			margin-bottom: 30px;
+			padding-bottom: 25px;
+			border-bottom: 2px solid rgba(255, 182, 193, 0.15);
+			position: relative;
+		}
+
+		.header-icon {
+			font-size: 48px;
+			margin-bottom: 15px;
+			display: inline-block;
+			animation: floatIcon 3s ease-in-out infinite;
+		}
+
+		@keyframes floatIcon {
+			0%, 100% {
+				transform: translateY(0);
+			}
+			50% {
+				transform: translateY(-10px);
+			}
+		}
+
+		h1 {
+			color: #d6336c;
+			margin: 0 0 10px 0;
+			font-size: 36px;
+			font-weight: 800;
+			letter-spacing: 0.5px;
+			text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+		}
+
+		.subtitle {
+			color: #a61e4d;
+			font-size: 18px;
+			font-style: italic;
+			margin: 0;
+			opacity: 0.9;
+		}
+
+		/* Contenido de la carta */
+		.letter-content {
+			background: #fffdfa;
+			border-radius: 15px;
+			padding: 30px;
+			margin: 25px 0;
+			border: 1px solid rgba(255, 182, 193, 0.3);
+			text-align: left;
+			box-shadow: 0 8px 25px rgba(214, 51, 108, 0.05);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.letter-content::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: repeating-linear-gradient(
+				to bottom,
+				transparent,
+				transparent 28px,
+				rgba(214, 51, 108, 0.05) 28px,
+				rgba(214, 51, 108, 0.05) 29px
+			);
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		.message-container {
+			position: relative;
+			z-index: 1;
+		}
+
+		.message {
+			color: #5a3d40;
+			line-height: 1.8;
+			font-size: 17px;
+			margin-bottom: 20px;
+			font-family: 'Georgia', serif;
+		}
+
+		.message:last-child {
+			margin-bottom: 0;
+		}
+
+		.signature {
+			text-align: right;
+			margin-top: 30px;
+			padding-top: 20px;
+			border-top: 1px dashed rgba(214, 51, 108, 0.2);
+			color: #d6336c;
+			font-style: italic;
+			font-weight: 600;
+			font-size: 18px;
+		}
+
+		/* Botones */
+		.buttons-container {
+			display: flex;
+			gap: 15px;
+			justify-content: center;
+			margin-top: 30px;
+			flex-wrap: wrap;
+		}
+
+		.btn {
+			padding: 14px 35px;
+			background: linear-gradient(135deg, #ff6b9d 0%, #d6336c 100%);
+			color: #fff;
+			border: none;
+			border-radius: 50px;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: 700;
+			transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+			box-shadow: 0 8px 25px rgba(214, 51, 108, 0.3);
+			position: relative;
+			overflow: hidden;
+			letter-spacing: 0.3px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			min-width: 180px;
+			justify-content: center;
+		}
+
+		.btn::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+			transition: left 0.6s ease;
+		}
+
+		.btn:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 12px 35px rgba(214, 51, 108, 0.4);
+		}
+
+		.btn:hover::after {
+			left: 100%;
+		}
+
+		.btn:active {
+			transform: translateY(-1px);
+			box-shadow: 0 6px 20px rgba(214, 51, 108, 0.3);
+		}
+
+		.btn-secondary {
+			background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+			color: #495057;
+			border: 2px solid #dee2e6;
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+		}
+
+		.btn-secondary:hover {
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+			border-color: #ced4da;
+		}
+
+		/* Pie de página */
+		.footer-note {
+			margin-top: 25px;
+			color: rgba(166, 30, 77, 0.6);
+			font-size: 14px;
+			font-style: italic;
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.card {
+				padding: 30px 25px;
+				border-radius: 18px;
+			}
+			
+			h1 {
+				font-size: 30px;
+			}
+			
+			.subtitle {
+				font-size: 16px;
+			}
+			
+			.letter-content {
+				padding: 25px 20px;
+			}
+			
+			.message {
+				font-size: 16px;
+				line-height: 1.7;
+			}
+			
+			.buttons-container {
+				flex-direction: column;
+				align-items: center;
+			}
+			
+			.btn {
+				width: 100%;
+				max-width: 300px;
+				padding: 13px 30px;
+			}
+			
+			.header-icon {
+				font-size: 42px;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.card {
+				padding: 25px 20px;
+			}
+			
+			h1 {
+				font-size: 26px;
+			}
+			
+			.subtitle {
+				font-size: 15px;
+			}
+			
+			.letter-content {
+				padding: 20px 15px;
+			}
+			
+			.message {
+				font-size: 15px;
+				line-height: 1.6;
+			}
+			
+			.btn {
+				padding: 12px 25px;
+				font-size: 15px;
+			}
+			
+			.header-icon {
+				font-size: 36px;
+			}
+		}
+
+		/* Animación para los párrafos */
+		.message {
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeInUp 0.6s ease-out forwards;
+		}
+
+		.message:nth-child(1) { animation-delay: 0.6s; }
+		.message:nth-child(2) { animation-delay: 0.8s; }
+		.message:nth-child(3) { animation-delay: 1.0s; }
+		.message:nth-child(4) { animation-delay: 1.2s; }
+		.signature { animation-delay: 1.4s; }
+
+		@keyframes fadeInUp {
+			0% {
+				opacity: 0;
+				transform: translateY(10px);
+			}
+			100% {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Contenedor de corazones animados -->
+	<div id="hearts-container"></div>
+
+	<div class="card">
+		<div class="header">
+			<div class="header-icon">😕</div>
+			<h1>Carta de Perdón</h1>
+			<p class="subtitle">Con humildad y sinceridad de corazón</p>
+		</div>
+
+		<div class="letter-content">
+			<div class="message-container">
+				<p class="message">Mi Vida </p>
+				
+				<p class="message">Principalmente me dirijo a ti con el corazón en la mano para pedirte disculpas por mi comportamiento. Sé que no gano nada repitiendo lo mismo a cada momento, pero mi intención no es que todo se vaya a la miércoles</p>
+				
+				<p class="message">Reconozco que he cometido errores y he actuado de manera irresponsable, y me arrepiento profundamente de ello. Quiero que sepas que valoro todo lo que haces por mí y te prometo que trabajaré duro para ser una mejor persona.</p>
+				
+				<p class="message">Para mí lo eres todo, aunque a veces pueda parecer lo contrario. Quiero hacerte feliz cada día y, si en algún momento te he lastimado, molestado o decepcionado, te pido perdón. De verdad quiero luchar por ti, por esto que tenemos y que llevamos construyendo. Me esfuerzo día a día para que funcione este camino tan bonito que estamos armando juntos.</p>
+
+                <p class="message">Sé que no empezamos con el pie derecho y admito mis errores, mis actitudes feas y que a veces me he portado de manera tonta. Con esta carta quiero pedirte perdón por todo lo malo y por los errores que he cometido hasta el momento.</p>
+				
+				<div class="signature"> 
+					Con cariño,<br>
+					<strong>te quiero mucho y quiero seguir construyendo contigo lo mejor de nosotros</strong>
+				</div>
+			</div>
+		</div>
+
+		<div class="buttons-container">
+			<button class="btn" onclick="location.href='../principal/diseño.html'">
+				<span>←</span>
+				<span>Volver</span>
+			</button>
+		</div>
+
+		<p class="footer-note">El perdón es la paz que florece donde antes hubo dolor.</p>
+	</div>
+
+	<script>
+		(function() {
+			// Crear corazones animados
+			const heartsContainer = document.getElementById('hearts-container');
+			
+			function createHeart() {
+				const heart = document.createElement('div');
+				heart.className = 'heart';
+				heart.innerHTML = '❤';
+				
+				// Tamaño aleatorio
+				const size = 15 + Math.random() * 25;
+				heart.style.fontSize = `${size}px`;
+				
+				// Color aleatorio en tonos rosados (consistentes con el tema)
+				const colors = ['#ff6b9d', '#ff8fab', '#ffb3c6', '#ff4d7d', '#ff3366'];
+				heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+				
+				// Posición inicial aleatoria
+				const startX = Math.random() * 100;
+				heart.style.left = `${startX}%`;
+				
+				// Duración aleatoria
+				const duration = 6 + Math.random() * 6;
+				heart.style.animationDuration = `${duration}s`;
+				
+				// Retraso aleatorio
+				const delay = Math.random() * 4;
+				heart.style.animationDelay = `${delay}s`;
+				
+				// Añadir al contenedor
+				heartsContainer.appendChild(heart);
+				
+				// Eliminar después de la animación
+				setTimeout(() => {
+					if (heart.parentNode) {
+						heart.parentNode.removeChild(heart);
+					}
+				}, (duration + delay) * 1000);
+			}
+			
+			// Crear corazones periódicamente
+			let heartInterval = setInterval(createHeart, 1000);
+			
+			// Crear corazones iniciales
+			for (let i = 0; i < 10; i++) {
+				setTimeout(createHeart, i * 300);
+			}
+			
+			// Limpiar intervalo al salir
+			window.addEventListener('beforeunload', function() {
+				clearInterval(heartInterval);
+			});
+			
+			// Efecto de hover en los botones
+			const buttons = document.querySelectorAll('.btn');
+			buttons.forEach(btn => {
+				btn.addEventListener('mouseenter', function() {
+					this.style.transform = 'translateY(-4px)';
+				});
+				
+				btn.addEventListener('mouseleave', function() {
+					this.style.transform = 'translateY(0)';
+				});
+			});
+			
+			// Ajustar animaciones en móvil
+			function checkMobile() {
+				const isMobile = window.innerWidth <= 768;
+				if (isMobile) {
+					// Reducir frecuencia de corazones en móvil
+					clearInterval(heartInterval);
+					heartInterval = setInterval(createHeart, 1500);
+				}
+			}
+			
+			window.addEventListener('load', checkMobile);
+			window.addEventListener('resize', checkMobile);
+		})();
+	</script>
+</body>
+</html>
