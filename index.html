@@ -879,6 +879,7 @@
 			const optAmor = document.getElementById('optAmor');
 			const optPerdon = document.getElementById('optPerdon');
 			const optExpresar = document.getElementById('optExpresar');
+			const optCanciones = document.getElementById('optCanciones');
 			const heartsContainer = document.getElementById('hearts-container');
 			
 			let isOpen = false;
@@ -1038,21 +1039,30 @@
 				}
 			});
 			
-			// Redirecciones a otras vistas
-			optAmor.addEventListener('click', function() {
-				window.location.href = '../amor/vista3.html';
-			});
-			
-			optPerdon.addEventListener('click', function() {
-				window.location.href = '../perdon/vista.html';
-			});
-			
-			optExpresar.addEventListener('click', function() {
-				window.location.href = '../expresar/vista2.html';
-			});
-            optCanciones.addEventListener('click', function() {
-               window.location.href = '../cancion/vista4.html';
-            });
+			// Rutas corregidas y protección si el elemento no existe
+			if (optAmor) {
+				optAmor.addEventListener('click', function() {
+					window.location.href = './amor/vista3.html';
+				});
+			}
+
+			if (optPerdon) {
+				optPerdon.addEventListener('click', function() {
+					window.location.href = './perdon/vista.html';
+				});
+			}
+
+			if (optExpresar) {
+				optExpresar.addEventListener('click', function() {
+					window.location.href = './expresar/vista2.html';
+				});
+			}
+
+			if (optCanciones) {
+				optCanciones.addEventListener('click', function() {
+					window.location.href = './cancion/vista4.html';
+				});
+			}
 			
 			// Ajuste responsive para scroll en móvil
 			function adjustResponsive() {
